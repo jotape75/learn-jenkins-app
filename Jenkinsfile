@@ -24,6 +24,11 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing...'
+                sh '''
+                    cd build
+                    ls -l | grep -i index
+                    npm test
+                '''
             }
         }
         stage('Deploy') {
