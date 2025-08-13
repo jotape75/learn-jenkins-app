@@ -1,6 +1,11 @@
 pipeline {
     agent any
     stages {
+        stage('Cleanup') {
+            steps {
+                cleanWs()
+            }
+        }
         stage('Build') {
             agent {
                 docker {
@@ -10,14 +15,11 @@ pipeline {
             }
             steps {
                 sh '''
-
                     echo 'Building...'
-                    ls -la
                     node --version
                     npm --version
                     npm ci
                     npm run build
-                    ls -la
                 '''
             }
         }
@@ -31,8 +33,6 @@ pipeline {
             steps {
                 echo 'Testing...'
                 sh '''
-                    cd build
-                    ls -l | grep -i index
                     npm test
                 '''
             }
@@ -41,6 +41,11 @@ pipeline {
             steps {
                 echo 'Deploying...'
             }
+        }
+    }
+    post {
+        success {
+            archiveArtifacts artifacts: '**'
         }
     }
 }
